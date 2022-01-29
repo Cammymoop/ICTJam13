@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/gaze.ogg-07419c2d0a7e0b632a16b8d4b2150d86.oggstr"
+
+[deps]
+
+source_file="res://assets/sfx/gaze.ogg"
+dest_files=[ "res://.import/gaze.ogg-07419c2d0a7e0b632a16b8d4b2150d86.oggstr" ]
+
+[params]
+
+loop=false
+loop_offset=0

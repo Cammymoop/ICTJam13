@@ -1,0 +1,18 @@
+
+TODO:
+
+Proper level loading/reseting
+* Power selection
+* Level selection
+
+More level elements
+* Surface you can't place off of
+* something bouncy
+* End goal
+
+
+Misc
+* muting
+* music
+* background stuff
+* weird effects for the gaze

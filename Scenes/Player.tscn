@@ -1,0 +1,869 @@
+[gd_scene load_steps=36 format=2]
+
+[ext_resource path="res://assets/img/player_sprite10.png" type="Texture" id=1]
+[ext_resource path="res://addons/godot_sfxr/SfxrStreamPlayer.gd" type="Script" id=2]
+[ext_resource path="res://assets/img/blocks.png" type="Texture" id=3]
+[ext_resource path="res://assets/img/player_sprite3.png" type="Texture" id=4]
+[ext_resource path="res://assets/img/player_sprite4.png" type="Texture" id=5]
+[ext_resource path="res://assets/img/player_sprite8.png" type="Texture" id=6]
+[ext_resource path="res://assets/img/player_sprite9.png" type="Texture" id=7]
+[ext_resource path="res://assets/img/player_sprite1.png" type="Texture" id=8]
+[ext_resource path="res://assets/img/player_sprite2.png" type="Texture" id=9]
+[ext_resource path="res://assets/img/player_sprite7.png" type="Texture" id=10]
+[ext_resource path="res://assets/img/player_sprite5.png" type="Texture" id=11]
+[ext_resource path="res://assets/img/player_sprite6.png" type="Texture" id=12]
+[ext_resource path="res://assets/img/player_gaze5.png" type="Texture" id=13]
+[ext_resource path="res://assets/img/player_gaze1.png" type="Texture" id=14]
+[ext_resource path="res://assets/img/player_gaze3.png" type="Texture" id=15]
+[ext_resource path="res://assets/img/player_gaze4.png" type="Texture" id=16]
+[ext_resource path="res://assets/sfx/gaze.ogg" type="AudioStream" id=17]
+[ext_resource path="res://assets/img/player_gaze2.png" type="Texture" id=18]
+[ext_resource path="res://src/Player.gd" type="Script" id=19]
+[ext_resource path="res://src/Manipulator.gd" type="Script" id=20]
+
+[sub_resource type="PhysicsMaterial" id=9]
+friction = 0.0
+
+[sub_resource type="ConvexPolygonShape2D" id=12]
+points = PoolVector2Array( 0.9, -1, 0.98, -0.98, 1, -0.9, 1, 0.9, 0.98, 0.98, 0.9, 1, -0.9, 1, -0.98, 0.98, -1, 0.9, -1, -0.9, -0.98, -0.98, -0.9, -1 )
+
+[sub_resource type="RectangleShape2D" id=10]
+extents = Vector2( 4.5, 4 )
+
+[sub_resource type="CapsuleShape2D" id=11]
+radius = 1.0
+height = 7.0
+
+[sub_resource type="Animation" id=18]
+resource_name = "falling"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ ExtResource( 11 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Sprite:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, -1 ) ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Sprite/GazeEyes:texture")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ ExtResource( 13 ) ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("Sprite/GazeEyes:offset")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, -1 ) ]
+}
+tracks/4/type = "value"
+tracks/4/path = NodePath("Sprite2:texture")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ ExtResource( 1 ) ]
+}
+tracks/5/type = "value"
+tracks/5/path = NodePath("Sprite2:offset")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, -1 ) ]
+}
+tracks/6/type = "value"
+tracks/6/path = NodePath("Sprite2/GazeEyes:texture")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ ExtResource( 13 ) ]
+}
+tracks/7/type = "value"
+tracks/7/path = NodePath("Sprite2/GazeEyes:offset")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, -1 ) ]
+}
+
+[sub_resource type="Animation" id=6]
+resource_name = "idle"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ ExtResource( 8 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Sprite:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, -1 ) ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Sprite/GazeEyes:texture")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ ExtResource( 14 ) ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("Sprite/GazeEyes:offset")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, -1 ) ]
+}
+tracks/4/type = "value"
+tracks/4/path = NodePath("Sprite2:texture")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ ExtResource( 12 ) ]
+}
+tracks/5/type = "value"
+tracks/5/path = NodePath("Sprite2:offset")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, -1 ) ]
+}
+tracks/6/type = "value"
+tracks/6/path = NodePath("Sprite2/GazeEyes:texture")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ ExtResource( 14 ) ]
+}
+tracks/7/type = "value"
+tracks/7/path = NodePath("Sprite2/GazeEyes:offset")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, -1 ) ]
+}
+
+[sub_resource type="Animation" id=7]
+resource_name = "jumping"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ ExtResource( 9 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Sprite:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, -1 ) ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Sprite2/GazeEyes:texture")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ ExtResource( 18 ) ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("Sprite2/GazeEyes:offset")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, -1 ) ]
+}
+tracks/4/type = "value"
+tracks/4/path = NodePath("Sprite2:offset")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, -1 ) ]
+}
+tracks/5/type = "value"
+tracks/5/path = NodePath("Sprite/GazeEyes:texture")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ ExtResource( 18 ) ]
+}
+tracks/6/type = "value"
+tracks/6/path = NodePath("Sprite/GazeEyes:offset")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, -1 ) ]
+}
+tracks/7/type = "value"
+tracks/7/path = NodePath("Sprite2:texture")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ ExtResource( 10 ) ]
+}
+
+[sub_resource type="Animation" id=19]
+resource_name = "look_down"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ ExtResource( 5 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Sprite:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 2, -1 ) ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Sprite/GazeEyes:texture")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ ExtResource( 16 ) ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("Sprite/GazeEyes:offset")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 2, -1 ) ]
+}
+tracks/4/type = "value"
+tracks/4/path = NodePath("Sprite2:texture")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ ExtResource( 7 ) ]
+}
+tracks/5/type = "value"
+tracks/5/path = NodePath("Sprite2:offset")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 2, -1 ) ]
+}
+tracks/6/type = "value"
+tracks/6/path = NodePath("Sprite2/GazeEyes:texture")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ ExtResource( 16 ) ]
+}
+tracks/7/type = "value"
+tracks/7/path = NodePath("Sprite2/GazeEyes:offset")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 2, -1 ) ]
+}
+
+[sub_resource type="Animation" id=20]
+resource_name = "look_up"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ ExtResource( 4 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Sprite:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, -1 ) ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Sprite/GazeEyes:texture")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ ExtResource( 15 ) ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("Sprite/GazeEyes:offset")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, -1 ) ]
+}
+tracks/4/type = "value"
+tracks/4/path = NodePath("Sprite2:texture")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ ExtResource( 6 ) ]
+}
+tracks/5/type = "value"
+tracks/5/path = NodePath("Sprite2:offset")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, -1 ) ]
+}
+tracks/6/type = "value"
+tracks/6/path = NodePath("Sprite2/GazeEyes:texture")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ ExtResource( 15 ) ]
+}
+tracks/7/type = "value"
+tracks/7/path = NodePath("Sprite2/GazeEyes:offset")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, -1 ) ]
+}
+
+[sub_resource type="Animation" id=8]
+resource_name = "running"
+length = 0.3
+loop = true
+step = 0.05
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.15 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ ExtResource( 9 ), ExtResource( 8 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Sprite:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, -1 ) ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Sprite/GazeEyes:texture")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0, 0.15 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ ExtResource( 18 ), ExtResource( 14 ) ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("Sprite/GazeEyes:offset")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, -1 ) ]
+}
+tracks/4/type = "value"
+tracks/4/path = NodePath("Sprite2:texture")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0, 0.15 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ ExtResource( 10 ), ExtResource( 12 ) ]
+}
+tracks/5/type = "value"
+tracks/5/path = NodePath("Sprite2:offset")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, -1 ) ]
+}
+tracks/6/type = "value"
+tracks/6/path = NodePath("Sprite2/GazeEyes:texture")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/keys = {
+"times": PoolRealArray( 0, 0.15 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ ExtResource( 18 ), ExtResource( 14 ) ]
+}
+tracks/7/type = "value"
+tracks/7/path = NodePath("Sprite2/GazeEyes:offset")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, -1 ) ]
+}
+
+[sub_resource type="AudioStreamGenerator" id=25]
+buffer_length = 0.348367
+
+[sub_resource type="AudioStreamGenerator" id=24]
+buffer_length = 0.107642
+
+[sub_resource type="AudioStreamGenerator" id=22]
+buffer_length = 0.101088
+
+[sub_resource type="AudioStreamGenerator" id=23]
+buffer_length = 0.225828
+
+[sub_resource type="RectangleShape2D" id=26]
+extents = Vector2( 5, 5.5 )
+
+[node name="Player" type="RigidBody2D" groups=["Player"]]
+mode = 2
+physics_material_override = SubResource( 9 )
+continuous_cd = 2
+contacts_reported = 6
+contact_monitor = true
+script = ExtResource( 19 )
+__meta__ = {
+"_edit_group_": true
+}
+i_destroy = true
+i_create = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2( 0, 0.5 )
+scale = Vector2( 4.5, 5 )
+shape = SubResource( 12 )
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="."]
+position = Vector2( -0.5, 1 )
+shape = SubResource( 10 )
+disabled = true
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="."]
+position = Vector2( -0.5, 5 )
+rotation = 1.5708
+shape = SubResource( 11 )
+disabled = true
+
+[node name="CollisionShape2D4" type="CollisionShape2D" parent="."]
+position = Vector2( -0.5, -3 )
+rotation = 1.5708
+shape = SubResource( 11 )
+disabled = true
+
+[node name="Sprite" type="Sprite" parent="."]
+position = Vector2( 0.5, -0.5 )
+texture = ExtResource( 5 )
+offset = Vector2( 2, -1 )
+
+[node name="GazeEyes" type="Sprite" parent="Sprite"]
+visible = false
+texture = ExtResource( 16 )
+offset = Vector2( 2, -1 )
+
+[node name="Sprite2" type="Sprite" parent="."]
+visible = false
+position = Vector2( 0.5, -0.5 )
+texture = ExtResource( 7 )
+offset = Vector2( 2, -1 )
+
+[node name="GazeEyes" type="Sprite" parent="Sprite2"]
+visible = false
+texture = ExtResource( 16 )
+offset = Vector2( 2, -1 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/falling = SubResource( 18 )
+anims/idle = SubResource( 6 )
+anims/jumping = SubResource( 7 )
+anims/look_down = SubResource( 19 )
+anims/look_up = SubResource( 20 )
+anims/running = SubResource( 8 )
+
+[node name="GazeTimer" type="Timer" parent="."]
+wait_time = 0.8
+one_shot = true
+
+[node name="Manipulator" type="Node2D" parent="."]
+script = ExtResource( 20 )
+
+[node name="Target" type="Sprite" parent="Manipulator"]
+visible = false
+texture = ExtResource( 3 )
+region_enabled = true
+region_rect = Rect2( 30, 15, 15, 15 )
+
+[node name="BreakSfx" type="AudioStreamPlayer" parent="Manipulator"]
+stream = SubResource( 25 )
+volume_db = -12.886
+script = ExtResource( 2 )
+wave/type = 3
+sample_params/sound_vol = 0.298165
+sample_params/sample_rate = 44100.0
+envelope/attack_time = 0.0550459
+envelope/sustain_time = 0.28192
+envelope/punch_time = 0.374003
+envelope/decay_time = 0.266667
+frequency/start_frequency = 0.412909
+frequency/min_freq_cutoff = 0.0
+frequency/slide = -0.0641972
+frequency/delta_slide = 0.0
+vibrato/depth = 0.22207
+vibrato/speed = 0.0303019
+arpeggiation/frequency_mult = -0.794889
+arpeggiation/change_speed = 0.747897
+duty_cycle/duty_cycle = 0.0
+duty_cycle/sweep = 0.0
+retrigger/rate = 0.0
+flanger/offset = 0.0
+flanger/sweep = 0.0
+low_pass_filter/cutoff_frequency = 1.0
+low_pass_filter/cutoff_sweep = 0.0
+low_pass_filter/resonance = 0.0
+high_pass_filter/cutoff_frequency = 0.0
+high_pass_filter/cutoff_sweep = 0.0
+actions/generator = null
+actions/play = null
+
+[node name="CreateSfx" type="AudioStreamPlayer" parent="Manipulator"]
+stream = SubResource( 24 )
+script = ExtResource( 2 )
+wave/type = 2
+sample_params/sound_vol = 0.5
+sample_params/sample_rate = 44100.0
+envelope/attack_time = 0.0
+envelope/sustain_time = 0.0924805
+envelope/punch_time = 0.0
+envelope/decay_time = 0.19725
+frequency/start_frequency = 0.299782
+frequency/min_freq_cutoff = 0.0
+frequency/slide = -0.543151
+frequency/delta_slide = 0.0
+vibrato/depth = 0.0
+vibrato/speed = 0.0
+arpeggiation/frequency_mult = 0.0
+arpeggiation/change_speed = 0.0
+duty_cycle/duty_cycle = 0.472875
+duty_cycle/sweep = 0.0
+retrigger/rate = 0.0
+flanger/offset = 0.0
+flanger/sweep = 0.0
+low_pass_filter/cutoff_frequency = 1.0
+low_pass_filter/cutoff_sweep = 0.0
+low_pass_filter/resonance = 0.0
+high_pass_filter/cutoff_frequency = 0.0
+high_pass_filter/cutoff_sweep = 0.0
+actions/generator = null
+actions/play = null
+
+[node name="GazeSfx" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 17 )
+
+[node name="SomeSfx" type="AudioStreamPlayer" parent="."]
+stream = SubResource( 22 )
+script = ExtResource( 2 )
+wave/type = 1
+sample_params/sound_vol = 0.5
+sample_params/sample_rate = 44100.0
+envelope/attack_time = 0.0
+envelope/sustain_time = 0.0206489
+envelope/punch_time = 0.0
+envelope/decay_time = 0.210097
+frequency/start_frequency = 0.278731
+frequency/min_freq_cutoff = 0.0
+frequency/slide = 0.260603
+frequency/delta_slide = 0.0
+vibrato/depth = 0.0
+vibrato/speed = 0.0
+arpeggiation/frequency_mult = 0.0
+arpeggiation/change_speed = 0.0
+duty_cycle/duty_cycle = 0.529698
+duty_cycle/sweep = 0.0
+retrigger/rate = 0.77137
+flanger/offset = 0.0
+flanger/sweep = 0.0
+low_pass_filter/cutoff_frequency = 1.0
+low_pass_filter/cutoff_sweep = 0.0
+low_pass_filter/resonance = 0.0
+high_pass_filter/cutoff_frequency = 0.0
+high_pass_filter/cutoff_sweep = 0.0
+actions/generator = null
+actions/play = null
+
+[node name="JumpSfx" type="AudioStreamPlayer" parent="."]
+stream = SubResource( 23 )
+script = ExtResource( 2 )
+wave/type = 1
+sample_params/sound_vol = 0.5
+sample_params/sample_rate = 44100.0
+envelope/attack_time = 0.0993342
+envelope/sustain_time = 0.137615
+envelope/punch_time = 0.0
+envelope/decay_time = 0.266055
+frequency/start_frequency = 0.231842
+frequency/min_freq_cutoff = 0.174312
+frequency/slide = 0.238532
+frequency/delta_slide = -0.201835
+vibrato/depth = 0.0
+vibrato/speed = 0.0
+arpeggiation/frequency_mult = -0.387386
+arpeggiation/change_speed = 0.0
+duty_cycle/duty_cycle = 0.0
+duty_cycle/sweep = 0.0
+retrigger/rate = 0.0
+flanger/offset = 0.0
+flanger/sweep = 0.0
+low_pass_filter/cutoff_frequency = 1.0
+low_pass_filter/cutoff_sweep = 0.0
+low_pass_filter/resonance = 0.0
+high_pass_filter/cutoff_frequency = 0.697144
+high_pass_filter/cutoff_sweep = 0.0366974
+actions/generator = null
+actions/play = null
+
+[node name="DamageZone" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DamageZone"]
+position = Vector2( 0, 0.5 )
+shape = SubResource( 26 )
+
+[connection signal="timeout" from="GazeTimer" to="." method="_on_GazeTimer_timeout"]
+[connection signal="area_entered" from="DamageZone" to="." method="_on_DamageZone_area_entered"]
+[connection signal="body_entered" from="DamageZone" to="." method="_on_DamageZone_body_entered"]

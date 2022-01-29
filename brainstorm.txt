@@ -1,0 +1,5 @@
+ICTJam 13/GGJ 2022 theme Duality
+
+jam idea: make or break
+
+2D platformer, one set of levels, choice of the power to place blocks or to destroy them
