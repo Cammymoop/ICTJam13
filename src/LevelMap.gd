@@ -10,6 +10,10 @@ var spikes: = 7
 
 var orbs: = 12
 
+var black_hole: = 22
+
+var player:Node = null
+
 var checkpoint_off = 18
 var checkpoint_on = 19
 
@@ -19,6 +23,10 @@ var which_checkpoint = null
 
 func _ready() -> void:
 	tile_width = cell_size.x
+	
+	var pl = get_tree().get_nodes_in_group("Player")
+	if pl:
+		player = pl[0]
 	
 	create_initial_cellmap()
 	level_setup()
@@ -92,19 +100,40 @@ func clear_orb(pos) -> void:
 	pos = world_to_map(pos)
 	set_cellv(pos, -1)
 	
-	clear_one_hitbox(pos)
+	clear_one_hitbox("orb", pos)
 
 func destroy_tile(pos) -> void:
+	var tile_here = get_cellv(pos)
 	set_cellv(pos, -1)
 	update_bitmask_area(pos)
+	
+	match tile_here:
+		spikes:
+			clear_one_hitbox("spike", pos)
+		checkpoint_off:
+			clear_one_hitbox("checkpoint", pos)
 	
 	make_collision_shapes()
 
 func create_tile(pos, index) -> void:
+	var tile_here = get_cellv(pos)
+	if tile_here == black_hole:
+		return
 	set_cellv(pos, index)
 	update_bitmask_area(pos)
 	
-	make_collision_shapes()
+	match tile_here:
+		spikes:
+			clear_one_hitbox("spike", pos)
+		checkpoint_off:
+			clear_one_hitbox("checkpoint", pos)
+	
+	if index in get_solid_tiles():
+		if player:
+			player.emit_signal("new_solid", pos)
+		else:
+			print("no playa")
+		make_collision_shapes()
 
 func get_solid_tiles() -> Array:
 	if cached_solid_tiles:
@@ -117,6 +146,11 @@ func get_solid_tiles() -> Array:
 			solid_tiles.append(i)
 	cached_solid_tiles = solid_tiles
 	return solid_tiles
+
+func is_position_solid(cell_position) -> bool:
+	var solids = get_solid_tiles()
+	var tile_here = get_cellv(cell_position)
+	return tile_here in solids
 
 func add_rectange_shape(tl_x, tl_y, width, height) -> void:
 	var rect = RectangleShape2D.new()
@@ -150,9 +184,16 @@ func clear_hitboxes() -> void:
 			continue
 		h.queue_free()
 
-# Orbs only
-func clear_one_hitbox(h_pos) -> void:
-	var hitboxes = $LevelStuff/OrbHitbox.get_children()
+# Orbs or spikes or checkpoints
+func clear_one_hitbox(type, h_pos) -> void:
+	var hitboxes = []
+	match type:
+		"orb":
+			hitboxes = $LevelStuff/OrbHitbox.get_children()
+		"checkpoint":
+			hitboxes = $LevelStuff/CPHitbox.get_children()
+		"spike":
+			hitboxes = $LevelStuff/SpikeHitbox.get_children()
 	
 	for h in hitboxes:
 		if h.name == "ExampleShape":

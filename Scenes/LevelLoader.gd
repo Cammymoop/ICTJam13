@@ -4,15 +4,18 @@ var state: = "limbo"
 
 var power_selected: = "destroy"
 
-var level_selected = 1
+var level_selected: = 1
 
-var max_level = 4
-var max_unlocked = 1
+var max_level = 5
+var max_unlocked = 5
 
 var arrows_on = false
 
 func _ready() -> void:
 	set_state("level_picking")
+
+func get_current_level() -> int:
+	return level_selected
 
 func _process(delta):
 	if Input.is_action_just_pressed("cheat"):
@@ -33,7 +36,7 @@ func _process(delta):
 		if Input.is_action_just_pressed("jump"):
 			set_state("power_picking")
 		if Input.is_action_just_pressed("gaze"):
-			set_state("brb")
+			pass #set_state("brb")
 	elif state == "power_picking":
 		if Input.is_action_just_pressed("escape"):
 			set_state("level_picking")
@@ -41,6 +44,9 @@ func _process(delta):
 		if Input.is_action_just_pressed("move_right") or Input.is_action_just_pressed("move_left"):
 			power_selected = "create" if power_selected == "destroy" else "destroy"
 			show_power_being_picked()
+			var player = find_player()
+			if player:
+				show_score(player.get_score(level_selected, power_selected))
 		
 		if Input.is_action_just_pressed("jump"):
 			var player = find_player()
@@ -49,11 +55,20 @@ func _process(delta):
 				player.i_create = true if power_selected == "create" else false
 			set_state("playing")
 		if Input.is_action_just_pressed("gaze"):
-			set_state("brb")
+			pass #set_state("brb")
 
 	elif state == "playing":
 		if Input.is_action_just_pressed("escape"):
-			set_state("power_picking")
+			set_state("level_picking")
+
+func hide_score():
+	$Orb.visible = false
+	$Score.visible = false
+
+func show_score(score):
+	$Orb.visible = true
+	$Score.text = str(score)
+	$Score.visible = true
 
 func show_power_being_picked():
 	hide_powers()
@@ -66,8 +81,11 @@ func hide_powers():
 	$Sprite_destroy.visible = false
 
 func unlock_next():
-	max_unlocked = min(max_level, max_unlocked + 1)
-	level_selected = max_unlocked
+	if level_selected >= max_unlocked:
+		max_unlocked = min(max_level, max_unlocked + 1)
+		level_selected = max_unlocked
+	else:
+		level_selected += 1
 	set_state("level_picking")
 
 func find_player() -> Node:
@@ -94,10 +112,12 @@ func set_state(new_state) -> void:
 	var player = find_player()
 	if state == "playing":
 		if player:
+			player.exit_level()
 			player.set_active(false)
 		$StaticCam.current = true
 	if state == "power_picking":
 		hide_powers()
+		hide_score()
 		
 	state = new_state
 	
@@ -111,6 +131,8 @@ func set_state(new_state) -> void:
 	elif new_state == "power_picking":
 		show_arrows()
 		show_power_being_picked()
+		if player:
+			show_score(player.get_score(level_selected, power_selected))
 	elif new_state == "level_picking":
 		show_arrows()
 		get_selected_level()

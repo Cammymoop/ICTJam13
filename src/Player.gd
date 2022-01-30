@@ -1,11 +1,15 @@
 extends RigidBody2D
 
+signal new_solid
+
 var move_force:float = 20.0
 
 var jumping:bool = false
 var facing_right:bool = true
 
 var current_anim:String = "idle"
+
+var HEIGHT_FROM_FLOOR = 7
 
 var JUMP_VELOCITY:float = 284.0
 var STOP_JUMP_FORCE:float = 1100.0
@@ -36,6 +40,29 @@ var JUMP_BUFFER_START = .14
 var ground_buffer = 0
 var GROUND_BUFFER_START = .2
 
+var orbs: = 0
+var checkpoint_orbs: = 0
+
+var scores = {
+	"create": {
+		1: 0,
+		2: 0,
+		3: 0,
+		4: 0,
+		5: 0,
+	},
+	"destroy": {
+		1: 0,
+		2: 0,
+		3: 0,
+		4: 0,
+		5: 0,
+	}
+}
+
+func my_power():
+	return "create" if i_create else "destroy"
+
 func _ready():
 	custom_integrator = true
 	visible = active
@@ -59,11 +86,14 @@ func spawn():
 		death_plane = level.get_cam_bounds().end.y + 20
 		
 		var spawn_point = level.get_spawn_position()
-		spawn_point = level.map_to_world(level.world_to_map(spawn_point)) + Vector2(level.tile_width/2, level.tile_width/2 + 2)
+		var offset = Vector2(level.tile_width/2, level.tile_width - HEIGHT_FROM_FLOOR)
+		spawn_point = level.map_to_world(level.world_to_map(spawn_point)) + offset
 		
 		global_position = spawn_point
 	else:
 		print_debug("No level to spawn in!!")
+	
+	orbs = checkpoint_orbs
 	
 	linear_velocity = Vector2.ZERO
 	
@@ -73,6 +103,10 @@ func spawn():
 	else:
 		$Sprite.visible = true
 		$Sprite2.visible = false
+
+func exit_level() -> void:
+	orbs = 0
+	checkpoint_orbs = 0
 
 func _process(delta)-> void:
 	if not active:
@@ -312,6 +346,11 @@ func find_level():
 	if f:
 		return f[0]
 	return null
+func find_level_loader():
+	var f = get_tree().get_nodes_in_group("LevelLoader")
+	if f:
+		return f[0]
+	return null
 
 func set_sprite_scale(scale) -> void:
 	$Sprite.scale.x = scale
@@ -360,20 +399,48 @@ func _on_MiscZone_area_shape_entered(_area_rid, area, area_shape_index, _local_s
 		var owner_index = area.shape_find_owner(area_shape_index)
 		var owner_node = area.shape_owner_get_owner(owner_index)
 		$GrabSfx.play_sfx()
+		orbs += 1
 		var f = get_tree().get_nodes_in_group("Level")
 		if f:
 			f[0].clear_orb(owner_node.global_position)
 	elif area.name == "EndHitbox":
+		var lvl = find_level_loader().get_current_level()
+		scores[my_power()][lvl] = max(scores[my_power()][lvl], orbs)
 		if was_on_ground:
 			real_end()
 		else:
 			buffer_end = true
 	elif area.name == "CPHitbox":
+		checkpoint_orbs = orbs
 		var level = find_level()
 		if level:
 			level.hit_checkpoint(global_position)
+
+func get_score(level, power):
+	return scores[power][level]
 
 func real_end() -> void:
 		get_tree().paused = true
 		$WinSfx.play_sfx()
 		$Timers/WinTimer.start()
+
+
+func _on_new_solid(tile_pos):
+	if not active:
+		return
+	var my_pos = $Manipulator.get_current_grid_space()
+	if my_pos != tile_pos:
+		return
+	
+	var level = find_level()
+	
+	#get pushed upwards, die if still inside a solid tile (squashed)
+	var tw = level.tile_width
+	global_position = Vector2(global_position.x, (floor(global_position.y/tw) * tw) - HEIGHT_FROM_FLOOR)
+	
+	if level.is_position_solid($Manipulator.get_current_grid_space()):
+		global_position.y += HEIGHT_FROM_FLOOR
+		reset()
+	else:
+		jumping = false
+	

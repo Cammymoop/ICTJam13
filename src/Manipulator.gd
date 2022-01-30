@@ -9,19 +9,22 @@ var cur_target_position:Vector2
 
 var destroyable = [2, 14, 15, 16, 17]
 
-var unplacable = [7, 13, 20]
+var unplacable = [7, 13, 20, 23, 21]
 var untargetable = [13]
 var restricter = [13]
+
+var blocks_vision = [21]
 
 var break_movers = {14: "up", 15: "down", 16: "left", 17: "right"}
 
 var brick_particle_packed = preload("res://Scenes/BrickParticle.tscn")
 var ring_particle_packed = preload("res://Scenes/PlaceParticle.tscn")
 
-var max_range = 16
+var max_range = 19
 
 func _ready():
 	$BreakSfx._build_buffer()
+	$CreateSfx._build_buffer()
 
 func start():
 	var f = get_tree().get_nodes_in_group("Level")
@@ -85,9 +88,10 @@ func find_next_solid_tile(direction):
 	var tile_here = level.get_cellv(pos)
 	while not tile_here in solids:
 		pos = _move(direction, pos)
-		if not in_bounds(pos, bounds):
+		if tile_here in blocks_vision or not in_bounds(pos, bounds):
 			return null
 		tile_here = level.get_cellv(pos)
+		
 		if count > max_range:
 			return null
 		count += 1
@@ -108,6 +112,7 @@ func show_create_target(direction, secondary_direction) -> bool:
 	
 	var alt: = false
 	target_pos = _move(reverse(direction), target_pos)
+	var old = target_pos
 	if direction == "down" and target_pos.y == get_current_grid_space().y:
 		var target2 = _move(secondary_direction, _move(direction, target_pos))
 		if not level.get_cellv(target2) in level.get_solid_tiles():
@@ -118,13 +123,25 @@ func show_create_target(direction, secondary_direction) -> bool:
 	if tile_here in unplacable:
 		return false
 	
-	var xs = [-1, 1, 0, 0]
-	var ys = [0, 0, -1, 1]
-	for i in range(4):
-		var x = xs[i]
-		var y = ys[i]
-		if level.get_cell(x + target_pos.x, y + target_pos.y) in restricter:
-			return false
+	var restricted = false
+	var loop = true
+	
+	while loop:
+		loop = false
+		var xs = [-1, 1, 0, 0]
+		var ys = [0, 0, -1, 1]
+		for i in range(4):
+			var x = xs[i]
+			var y = ys[i]
+			if level.get_cell(x + target_pos.x, y + target_pos.y) in restricter:
+				restricted = true
+		if alt and restricted:
+			target_pos = old
+			restricted = false
+			loop = true
+			alt = false
+	if restricted:
+		return false
 	
 	target_on(target_pos)
 	return true

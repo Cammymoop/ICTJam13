@@ -40,6 +40,10 @@ _global_script_class_icons={
 
 config/name="Make or Break"
 run/main_scene="res://Scenes/GameScene.tscn"
+boot_splash/image="res://assets/img/two_of_them_big.png"
+boot_splash/fullsize=false
+boot_splash/use_filter=false
+boot_splash/bg_color=Color( 0.309804, 0.509804, 0.513726, 1 )
 config/icon="res://icon.png"
 
 [display]

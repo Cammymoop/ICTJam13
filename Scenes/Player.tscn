@@ -998,6 +998,7 @@ high_pass_filter/cutoff_sweep = 0.0
 actions/generator = null
 actions/play = null
 
+[connection signal="new_solid" from="." to="." method="_on_new_solid"]
 [connection signal="timeout" from="GazeTimer" to="." method="_on_GazeTimer_timeout"]
 [connection signal="area_entered" from="DamageZone" to="." method="_on_DamageZone_area_entered"]
 [connection signal="body_entered" from="DamageZone" to="." method="_on_DamageZone_body_entered"]
