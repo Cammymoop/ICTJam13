@@ -12,7 +12,7 @@ var STOP_JUMP_FORCE:float = 1100.0
 var MOVE_FORCE:float = 600.0
 
 var VEL_CAP:float = 120.0
-var GROUND_DRAG:float = 180.0
+var GROUND_DRAG:float = 350.0
 var AIR_DRAG:float = 20.0
 
 var FALL_THRESHOLD:float = 120.0
@@ -23,15 +23,49 @@ var gazing: = false
 export var i_destroy: = false
 export var i_create: = true
 
+var active: = false
+
+var was_on_ground = false
+var buffer_end = false
+
+var hitbox_hold = false
+
+var jump_buffer = 0
+var JUMP_BUFFER_START = .14
+
+var ground_buffer = 0
+var GROUND_BUFFER_START = .2
+
 func _ready():
-	pass # Replace with function body.
+	custom_integrator = true
+	visible = active
 	
 	$JumpSfx._build_buffer()
-	
+	$GrabSfx._build_buffer()
+	$WinSfx._build_buffer()
+	$DeathSfx._build_buffer()
+	#spawn()
+
+func set_active(new_active) -> void:
+	visible = new_active
+	active = new_active
+
+func spawn():
+	set_active(true)
+	$Manipulator.start()
 	var f = get_tree().get_nodes_in_group("Level")
 	if f:
 		var level = f[0]
 		death_plane = level.get_cam_bounds().end.y + 20
+		
+		var spawn_point = level.get_spawn_position()
+		spawn_point = level.map_to_world(level.world_to_map(spawn_point)) + Vector2(level.tile_width/2, level.tile_width/2 + 2)
+		
+		global_position = spawn_point
+	else:
+		print_debug("No level to spawn in!!")
+	
+	linear_velocity = Vector2.ZERO
 	
 	if i_create:
 		$Sprite.visible = false
@@ -41,11 +75,14 @@ func _ready():
 		$Sprite2.visible = false
 
 func _process(delta)-> void:
+	if not active:
+		return
+		
 	if Input.is_action_just_pressed("restart"):
-		get_tree().reload_current_scene()
+		reset()
 	
 	if position.y > death_plane:
-		death()
+		reset()
 	
 	if Input.is_action_just_pressed("gaze"):
 		var direction = "right" if facing_right else "left"
@@ -63,7 +100,7 @@ func _process(delta)-> void:
 				$GazeSfx.pitch_scale = .9 + (randf() * 0.2)
 				$GazeSfx.play()
 		elif i_create:
-			var found_target = $Manipulator.show_create_target(direction)
+			var found_target = $Manipulator.show_create_target(direction, "right" if facing_right else "left")
 			if found_target:
 				$GazeSfx.pitch_scale = 1.1 + (randf() * 0.5)
 				$GazeSfx.play()
@@ -73,14 +110,39 @@ func _process(delta)-> void:
 		gazing = false
 		show_gaze_eyes(false)
 		$Manipulator.hide_target()
+	
+	if buffer_end and was_on_ground:
+		var f = get_tree().get_nodes_in_group("Level")
+		if f:
+			var level = f[0]
+			if $MiscZone.overlaps_area(level.get_node("EndHitbox")):
+				real_end()
+			else:
+				buffer_end = false
 
 func _integrate_forces(s):
+	if not active:
+		return
+	
 	var lv = s.get_linear_velocity()
 	var step = s.get_step()
 
 	var move_left: = Input.is_action_pressed("move_left")
 	var move_right: = Input.is_action_pressed("move_right")
-	var jump: = Input.is_action_pressed("jump")
+	var real_jump_press: = Input.is_action_just_pressed("jump")
+	var real_jump_input: = Input.is_action_pressed("jump")
+	
+	if real_jump_press:
+		jump_buffer = JUMP_BUFFER_START
+	elif jump_buffer > 0:
+		jump_buffer -= step
+	
+	var jump_input = jump_buffer > 0
+	
+	if ground_buffer > 0:
+		ground_buffer -= step
+	
+	var buffered_ground = ground_buffer > 0
 	
 	var look_up: = Input.is_action_pressed("look_up")
 	var look_down: = Input.is_action_pressed("look_down")
@@ -91,7 +153,7 @@ func _integrate_forces(s):
 		if lv.y > 0:
 			# Set off the jumping flag if going down.
 			jumping = false
-		elif not jump:
+		elif not real_jump_input:
 			stopping_jump = true
 
 		if stopping_jump:
@@ -129,11 +191,17 @@ func _integrate_forces(s):
 			lv.x = sign(lv.x) * xv
 
 		# Check jump.
-		if not jumping and jump:
+		if not jumping and jump_input:
 			$JumpSfx.play_sfx()
 			lv.y = -JUMP_VELOCITY
 			jumping = true
 			stopping_jump = false
+			jump_buffer = 0
+			
+			jump_collisionbox()
+		
+		if not jumping and is_jump_collisionbox():
+			normal_collisionbox()
 
 		if jumping:
 			new_anim = "jumping"
@@ -167,6 +235,16 @@ func _integrate_forces(s):
 			if xv < 0:
 				xv = 0
 			lv.x = sign(lv.x) * xv
+		
+		# Check jump.
+		if not jumping and real_jump_press and buffered_ground:
+			$JumpSfx.play_sfx()
+			lv.y = -JUMP_VELOCITY
+			jumping = true
+			stopping_jump = false
+			jump_buffer = 0
+			
+			jump_collisionbox()
 
 		if lv.y < FALL_THRESHOLD:
 			new_anim = "jumping"
@@ -186,9 +264,54 @@ func _integrate_forces(s):
 	# Finally, apply gravity and set back the linear velocity.
 	lv += s.get_total_gravity() * step
 	s.set_linear_velocity(lv)
+	
+	was_on_ground = on_floor
+	if on_floor:
+		ground_buffer = GROUND_BUFFER_START
 
-func death() -> void:
-	get_tree().reload_current_scene()
+func jump_collisionbox() -> void:
+	if hitbox_hold:
+		return
+	hitbox_hold = true
+	$RealCollisionBoxJump.set_deferred('disabled', false)
+	$RealCollisionBox.set_deferred('disabled', true)
+	set_deferred('hitbox_hold', false)
+func normal_collisionbox() -> void:
+	if hitbox_hold:
+		return
+	hitbox_hold = true
+	$RealCollisionBoxJump.set_deferred('disabled', true)
+	$RealCollisionBox.set_deferred('disabled', false)
+	set_deferred('hitbox_hold', false)
+func is_jump_collisionbox() -> bool:
+	return not $RealCollisionBoxJump.disabled
+
+func reset() -> void:
+	$DeathSfx.play_sfx()
+	$Timers/DeathTimer.start()
+	get_tree().paused = true
+
+func reload_level() -> void:
+	var f = get_tree().get_nodes_in_group("Level")
+	if f:
+		var level = f[0]
+		level.reset_to_checkpoint()
+	
+	get_tree().paused = false
+	
+	spawn()
+
+func win() -> void:
+	get_tree().paused = false
+	var f = get_tree().get_nodes_in_group("LevelLoader")
+	if f:
+		f[0].unlock_next()
+
+func find_level():
+	var f = get_tree().get_nodes_in_group("Level")
+	if f:
+		return f[0]
+	return null
 
 func set_sprite_scale(scale) -> void:
 	$Sprite.scale.x = scale
@@ -215,8 +338,42 @@ func _on_GazeTimer_timeout():
 
 
 func _on_DamageZone_area_entered(area):
-	death()
-
+	if not active:
+		return
+	reset()
 
 func _on_DamageZone_body_entered(body):
-	death()
+	if not active:
+		return
+	reset()
+
+func _on_MiscZone_body_entered(body):
+	if not active:
+		return
+	pass # Replace with function body.
+
+func _on_MiscZone_area_shape_entered(_area_rid, area, area_shape_index, _local_shape_index):
+	if not active:
+		return
+	#print_debug("touched " + area.name)
+	if area.name == "OrbHitbox":
+		var owner_index = area.shape_find_owner(area_shape_index)
+		var owner_node = area.shape_owner_get_owner(owner_index)
+		$GrabSfx.play_sfx()
+		var f = get_tree().get_nodes_in_group("Level")
+		if f:
+			f[0].clear_orb(owner_node.global_position)
+	elif area.name == "EndHitbox":
+		if was_on_ground:
+			real_end()
+		else:
+			buffer_end = true
+	elif area.name == "CPHitbox":
+		var level = find_level()
+		if level:
+			level.hit_checkpoint(global_position)
+
+func real_end() -> void:
+		get_tree().paused = true
+		$WinSfx.play_sfx()
+		$Timers/WinTimer.start()

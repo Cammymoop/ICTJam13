@@ -7,6 +7,7 @@ var above_level_bounds = 100
 func _ready():
 	following = get_tree().get_nodes_in_group("Player")[0]
 	
+func update_bounds() -> void:
 	var f = get_tree().get_nodes_in_group("Level")
 	if f:
 		var level = f[0]

@@ -1,0 +1,52 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://src/Tileset.tres" type="TileSet" id=1]
+[ext_resource path="res://src/LevelMap.gd" type="Script" id=2]
+
+[sub_resource type="CircleShape2D" id=18]
+radius = 3.53553
+
+[sub_resource type="RectangleShape2D" id=19]
+extents = Vector2( 12, 9.75 )
+
+[node name="LevelMap" type="TileMap" groups=["Level"]]
+tile_set = ExtResource( 1 )
+cell_size = Vector2( 15, 15 )
+collision_layer = 0
+collision_mask = 0
+format = 1
+tile_data = PoolIntArray( 327682, 6, 0, 393218, 13, 3, 393226, 13, 3, 458754, 13, 131075, 458760, 5, 0, 458762, 13, 65539, 458763, 8, 0, 458764, 9, 0, 524290, 2, 65539, 524294, 6, 0, 524295, 3, 0, 524296, 3, 196610, 524298, 13, 65539, 524299, 10, 0, 524300, 11, 0, 589826, 2, 65536, 589827, 13, 196611, 589828, 2, 2, 589830, 3, 0, 589831, 3, 131074, 589834, 13, 65536, 589835, 13, 196609, 589836, 13, 2, 655362, 2, 65539, 655364, 2, 65539, 655366, 3, 65539, 655370, 13, 65539, 655372, 13, 65539, 720898, 2, 131072, 720899, 2, 196609, 720900, 2, 131074, 720902, 3, 131075, 720906, 13, 131072, 720907, 13, 196609, 720908, 13, 131074, 786444, 1073741828, 0, 917516, 7, 0, 917517, 7, 0, 983051, 7, 0, 983052, 7, 0, 983053, 7, 0, 983054, 7, 0, 983055, 7, 0 )
+script = ExtResource( 2 )
+
+[node name="CollisionBody" type="StaticBody2D" parent="."]
+
+[node name="SpikeHitbox" type="Area2D" parent="."]
+position = Vector2( 7.5, 7.5 )
+collision_layer = 4
+collision_mask = 0
+monitoring = false
+
+[node name="ExampleShape" type="CollisionShape2D" parent="SpikeHitbox"]
+shape = SubResource( 18 )
+disabled = true
+
+[node name="OrbHitbox" type="Area2D" parent="."]
+position = Vector2( 7.5, 7.5 )
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+
+[node name="ExampleShape" type="CollisionShape2D" parent="OrbHitbox"]
+shape = SubResource( 18 )
+disabled = true
+
+[node name="EndHitbox" type="Area2D" parent="."]
+collision_layer = 8
+collision_mask = 0
+
+[node name="ExampleShape" type="CollisionShape2D" parent="EndHitbox"]
+shape = SubResource( 19 )
+disabled = true
+
+[node name="PlayerSpawn" type="Node2D" parent="."]
+position = Vector2( 52, 129 )

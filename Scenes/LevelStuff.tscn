@@ -1,0 +1,52 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://src/cp_hitbox.tres" type="Shape2D" id=1]
+[ext_resource path="res://src/orb_hitbox.tres" type="Shape2D" id=2]
+
+[sub_resource type="CircleShape2D" id=18]
+radius = 3.53553
+
+[sub_resource type="RectangleShape2D" id=19]
+extents = Vector2( 12, 9.75 )
+
+[node name="LevelStuff" type="Node2D"]
+
+[node name="CollisionBody" type="StaticBody2D" parent="."]
+
+[node name="SpikeHitbox" type="Area2D" parent="."]
+position = Vector2( 7.5, 7.5 )
+collision_layer = 4
+collision_mask = 0
+monitoring = false
+
+[node name="ExampleShape" type="CollisionShape2D" parent="SpikeHitbox"]
+shape = SubResource( 18 )
+disabled = true
+
+[node name="OrbHitbox" type="Area2D" parent="."]
+position = Vector2( 7.5, 7.5 )
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+
+[node name="ExampleShape" type="CollisionShape2D" parent="OrbHitbox"]
+shape = ExtResource( 2 )
+disabled = true
+
+[node name="CPHitbox" type="Area2D" parent="."]
+position = Vector2( 7.5, 7.5 )
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+
+[node name="ExampleShape" type="CollisionShape2D" parent="CPHitbox"]
+shape = ExtResource( 1 )
+disabled = true
+
+[node name="EndHitbox" type="Area2D" parent="."]
+collision_layer = 8
+collision_mask = 0
+
+[node name="ExampleShape" type="CollisionShape2D" parent="EndHitbox"]
+shape = SubResource( 19 )
+disabled = true

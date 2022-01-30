@@ -9,14 +9,17 @@
 [node name="LevelMap" parent="." instance=ExtResource( 2 )]
 
 [node name="Player" parent="." instance=ExtResource( 1 )]
-position = Vector2( 39, 69 )
-i_destroy = false
-i_create = true
+position = Vector2( 86, 63 )
 
-[node name="Cam" type="Camera2D" parent="."]
-current = true
+[node name="LevelLoader" type="Node2D" parent="."]
+
+[node name="Cam" type="Camera2D" parent="LevelLoader"]
 limit_left = -40
 drag_margin_h_enabled = true
 drag_margin_v_enabled = true
 drag_margin_top = 0.4
 script = ExtResource( 9 )
+
+[node name="StaticCam" type="Camera2D" parent="LevelLoader"]
+anchor_mode = 0
+current = true

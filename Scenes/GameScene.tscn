@@ -1,0 +1,64 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://Scenes/LevelLoader.gd" type="Script" id=1]
+[ext_resource path="res://Scenes/Player.tscn" type="PackedScene" id=2]
+[ext_resource path="res://src/Cam.gd" type="Script" id=3]
+[ext_resource path="res://assets/img/player_sprite1.png" type="Texture" id=4]
+[ext_resource path="res://assets/img/player_sprite6.png" type="Texture" id=5]
+[ext_resource path="res://assets/img/arrow.png" type="Texture" id=6]
+
+[node name="Root" type="Node2D"]
+
+[node name="Player" parent="." instance=ExtResource( 2 )]
+position = Vector2( 86, 63 )
+
+[node name="LevelLoader" type="Node2D" parent="." groups=["LevelLoader"]]
+script = ExtResource( 1 )
+
+[node name="Cam" type="Camera2D" parent="LevelLoader"]
+limit_left = -40
+drag_margin_h_enabled = true
+drag_margin_v_enabled = true
+drag_margin_left = 0.13
+drag_margin_top = 0.4
+drag_margin_right = 0.13
+editor_draw_drag_margin = true
+script = ExtResource( 3 )
+
+[node name="StaticCam" type="Camera2D" parent="LevelLoader"]
+anchor_mode = 0
+current = true
+
+[node name="Sprite_create" type="Sprite" parent="LevelLoader"]
+visible = false
+position = Vector2( 120, 120 )
+scale = Vector2( 6, 6 )
+z_index = 20
+texture = ExtResource( 5 )
+
+[node name="Sprite_destroy" type="Sprite" parent="LevelLoader"]
+visible = false
+position = Vector2( 120, 120 )
+scale = Vector2( 6, 6 )
+z_index = 20
+texture = ExtResource( 4 )
+
+[node name="Arrows" type="Node2D" parent="LevelLoader"]
+
+[node name="Sprite" type="Sprite" parent="LevelLoader/Arrows"]
+position = Vector2( 200, 120 )
+scale = Vector2( 3, 3 )
+z_index = 20
+texture = ExtResource( 6 )
+
+[node name="Sprite2" type="Sprite" parent="LevelLoader/Arrows"]
+position = Vector2( 40, 120 )
+scale = Vector2( 3, 3 )
+z_index = 20
+texture = ExtResource( 6 )
+flip_h = true
+
+[node name="Blinky" type="Timer" parent="LevelLoader"]
+wait_time = 0.5
+
+[connection signal="timeout" from="LevelLoader/Blinky" to="LevelLoader" method="_on_Blinky_timeout"]

@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=2]
+[gd_scene load_steps=39 format=2]
 
 [ext_resource path="res://assets/img/player_sprite10.png" type="Texture" id=1]
 [ext_resource path="res://addons/godot_sfxr/SfxrStreamPlayer.gd" type="Script" id=2]
@@ -639,19 +639,29 @@ tracks/7/keys = {
 [sub_resource type="AudioStreamGenerator" id=25]
 buffer_length = 0.348367
 
-[sub_resource type="AudioStreamGenerator" id=24]
+[sub_resource type="AudioStreamGenerator" id=29]
 buffer_length = 0.107642
 
-[sub_resource type="AudioStreamGenerator" id=22]
+[sub_resource type="AudioStreamGenerator" id=30]
 buffer_length = 0.101088
 
 [sub_resource type="AudioStreamGenerator" id=23]
 buffer_length = 0.225828
 
+[sub_resource type="AudioStreamGenerator" id=27]
+buffer_length = 0.209025
+
 [sub_resource type="RectangleShape2D" id=26]
 extents = Vector2( 5, 5.5 )
 
+[sub_resource type="AudioStreamGenerator" id=28]
+buffer_length = 1.8744
+
+[sub_resource type="AudioStreamGenerator" id=31]
+buffer_length = 0.823492
+
 [node name="Player" type="RigidBody2D" groups=["Player"]]
+z_index = 1
 mode = 2
 physics_material_override = SubResource( 9 )
 continuous_cd = 2
@@ -664,10 +674,16 @@ __meta__ = {
 i_destroy = true
 i_create = false
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="RealCollisionBox" type="CollisionShape2D" parent="."]
 position = Vector2( 0, 0.5 )
 scale = Vector2( 4.5, 5 )
 shape = SubResource( 12 )
+
+[node name="RealCollisionBoxJump" type="CollisionShape2D" parent="."]
+position = Vector2( 0, 0.5 )
+scale = Vector2( 3, 5 )
+shape = SubResource( 12 )
+disabled = true
 
 [node name="CollisionShape2D2" type="CollisionShape2D" parent="."]
 position = Vector2( -0.5, 1 )
@@ -761,7 +777,7 @@ actions/generator = null
 actions/play = null
 
 [node name="CreateSfx" type="AudioStreamPlayer" parent="Manipulator"]
-stream = SubResource( 24 )
+stream = SubResource( 29 )
 script = ExtResource( 2 )
 wave/type = 2
 sample_params/sound_vol = 0.5
@@ -795,7 +811,7 @@ actions/play = null
 stream = ExtResource( 17 )
 
 [node name="SomeSfx" type="AudioStreamPlayer" parent="."]
-stream = SubResource( 22 )
+stream = SubResource( 30 )
 script = ExtResource( 2 )
 wave/type = 1
 sample_params/sound_vol = 0.5
@@ -856,7 +872,39 @@ high_pass_filter/cutoff_sweep = 0.0366974
 actions/generator = null
 actions/play = null
 
+[node name="GrabSfx" type="AudioStreamPlayer" parent="."]
+stream = SubResource( 27 )
+script = ExtResource( 2 )
+wave/type = 1
+sample_params/sound_vol = 0.5
+sample_params/sample_rate = 44100.0
+envelope/attack_time = 0.0
+envelope/sustain_time = 0.0919138
+envelope/punch_time = 0.47989
+envelope/decay_time = 0.289348
+frequency/start_frequency = 0.455504
+frequency/min_freq_cutoff = 0.0
+frequency/slide = 0.0
+frequency/delta_slide = 0.0
+vibrato/depth = 0.0
+vibrato/speed = 0.0
+arpeggiation/frequency_mult = 0.33753
+arpeggiation/change_speed = 0.581945
+duty_cycle/duty_cycle = 0.0
+duty_cycle/sweep = 0.0
+retrigger/rate = 0.0
+flanger/offset = 0.0
+flanger/sweep = 0.0
+low_pass_filter/cutoff_frequency = 1.0
+low_pass_filter/cutoff_sweep = 0.0
+low_pass_filter/resonance = 0.0
+high_pass_filter/cutoff_frequency = 0.0
+high_pass_filter/cutoff_sweep = 0.0
+actions/generator = null
+actions/play = null
+
 [node name="DamageZone" type="Area2D" parent="."]
+visible = false
 collision_layer = 0
 collision_mask = 4
 
@@ -864,6 +912,96 @@ collision_mask = 4
 position = Vector2( 0, 0.5 )
 shape = SubResource( 26 )
 
+[node name="MiscZone" type="Area2D" parent="."]
+visible = false
+collision_layer = 0
+collision_mask = 8
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MiscZone"]
+position = Vector2( 0, 0.5 )
+shape = SubResource( 26 )
+
+[node name="Timers" type="Node" parent="."]
+
+[node name="DeathTimer" type="Timer" parent="Timers"]
+pause_mode = 2
+wait_time = 0.6
+one_shot = true
+
+[node name="WinTimer" type="Timer" parent="Timers"]
+pause_mode = 2
+wait_time = 2.0
+one_shot = true
+
+[node name="WinSfx" type="AudioStreamPlayer" parent="."]
+pause_mode = 2
+stream = SubResource( 28 )
+pitch_scale = 0.4
+script = ExtResource( 2 )
+wave/type = 1
+sample_params/sound_vol = 0.5
+sample_params/sample_rate = 44100.0
+envelope/attack_time = 0.0917431
+envelope/sustain_time = 0.638461
+envelope/punch_time = 0.0
+envelope/decay_time = 0.640745
+frequency/start_frequency = 0.313162
+frequency/min_freq_cutoff = 0.0
+frequency/slide = 0.126327
+frequency/delta_slide = -0.05
+vibrato/depth = 0.476592
+vibrato/speed = 0.272727
+arpeggiation/frequency_mult = 0.0
+arpeggiation/change_speed = 0.0
+duty_cycle/duty_cycle = 0.401261
+duty_cycle/sweep = 0.0
+retrigger/rate = 0.0
+flanger/offset = 0.0
+flanger/sweep = 0.0
+low_pass_filter/cutoff_frequency = 1.0
+low_pass_filter/cutoff_sweep = 0.0
+low_pass_filter/resonance = 0.0
+high_pass_filter/cutoff_frequency = 0.0
+high_pass_filter/cutoff_sweep = 0.0
+actions/generator = null
+actions/play = null
+
+[node name="DeathSfx" type="AudioStreamPlayer" parent="."]
+pause_mode = 2
+stream = SubResource( 31 )
+script = ExtResource( 2 )
+wave/type = 1
+sample_params/sound_vol = 0.5
+sample_params/sample_rate = 44100.0
+envelope/attack_time = 0.238532
+envelope/sustain_time = 0.0696539
+envelope/punch_time = 0.0
+envelope/decay_time = 0.549002
+frequency/start_frequency = 0.313162
+frequency/min_freq_cutoff = 0.0
+frequency/slide = 0.126327
+frequency/delta_slide = 0.0
+vibrato/depth = 0.476592
+vibrato/speed = 0.272727
+arpeggiation/frequency_mult = 0.0
+arpeggiation/change_speed = 0.0
+duty_cycle/duty_cycle = 0.401261
+duty_cycle/sweep = 0.0
+retrigger/rate = 0.0
+flanger/offset = 0.0
+flanger/sweep = 0.0
+low_pass_filter/cutoff_frequency = 1.0
+low_pass_filter/cutoff_sweep = 0.0
+low_pass_filter/resonance = 0.0
+high_pass_filter/cutoff_frequency = 0.0
+high_pass_filter/cutoff_sweep = 0.0
+actions/generator = null
+actions/play = null
+
 [connection signal="timeout" from="GazeTimer" to="." method="_on_GazeTimer_timeout"]
 [connection signal="area_entered" from="DamageZone" to="." method="_on_DamageZone_area_entered"]
 [connection signal="body_entered" from="DamageZone" to="." method="_on_DamageZone_body_entered"]
+[connection signal="area_shape_entered" from="MiscZone" to="." method="_on_MiscZone_area_shape_entered"]
+[connection signal="body_entered" from="MiscZone" to="." method="_on_MiscZone_body_entered"]
+[connection signal="timeout" from="Timers/DeathTimer" to="." method="reload_level"]
+[connection signal="timeout" from="Timers/WinTimer" to="." method="win"]

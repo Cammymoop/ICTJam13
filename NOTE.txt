@@ -1,0 +1,4 @@
+NOTE
+
+documentation for area_shape_entered is wrong you need to get owner id then get the owner object
+it was passing the shape id as if it was an owner id
